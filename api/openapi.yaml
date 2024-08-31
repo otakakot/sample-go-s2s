@@ -1,0 +1,126 @@
+openapi: 3.0.3
+info:
+  title: S2S APP
+  description: |-
+    This is the S2S APP API documentation.
+  termsOfService: https://localhost:8080
+  contact:
+    email: kotaro.otaka@example.com
+  license:
+    name: MIT
+  version: 0.0.1
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: AuthN
+    description: AuthN
+paths:
+  /certs:
+    get:
+      tags:
+        - AuthN
+      summary: Get JWK Set
+      description: https://openid-foundation-japan.github.io/rfc7517.ja.html
+      operationId: getCerts
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JWKSetSchema'
+        '500':
+          description: Internal Server Error
+    post:
+      tags:
+        - AuthN
+      summary: Post JWK Set
+      description: https://openid-foundation-japan.github.io/rfc7517.ja.html
+      operationId: postCerts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JWKSetKey'
+      responses:
+        '200':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JWKSetKey'
+        '500':
+          description: Internal Server Error
+  /verify:
+    get:
+      tags:
+        - AuthN
+      summary: Verify JWT
+      description: Verify JWT
+      operationId: verify
+      security:
+        - Bearer: []
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+components:
+  securitySchemes:
+    Bearer:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    JWKSetSchema:
+      type: object
+      description: https://openid-foundation-japan.github.io/rfc7517.ja.html#anchor5
+      properties:
+        keys:
+          type: array
+          items:
+            $ref: '#/components/schemas/JWKSetKey'
+      required:
+        - keys
+    JWKSetKey:
+      type: object
+      description: jwk set key
+      properties:
+        kid:
+          type: string
+          format: uuid
+          description: 鍵識別子
+        kty:
+          type: string
+          description: RSAやEC等の暗号アルゴリズムファミリー
+          example: kty
+        use:
+          type: string
+          description: 公開鍵の用途
+          example: sig
+        alg:
+          type: string
+          description: 署名検証アルゴリズム
+          example: alg
+        n:
+          type: string
+          description: modulus 公開鍵を復元するための公開鍵の絶対値
+          example: n
+        e:
+          type: string
+          description: exponent 公開鍵を復元するための指数値
+          example: e
+      required:
+        - kid
+        - kty
+        - use
+        - alg
+        - n
+        - e
