@@ -18,6 +18,8 @@ import (
 )
 
 func TestXxx(t *testing.T) {
+	t.Parallel()
+
 	key := GenerateSignKey(t)
 
 	jwtSetKey := api.JWKSetKey{
@@ -82,6 +84,26 @@ func TestXxx(t *testing.T) {
 
 	if vRes.StatusCode != http.StatusOK {
 		t.Fatalf("vRes.StatusCode = %v", vRes.StatusCode)
+	}
+}
+
+func TestYyy(t *testing.T) {
+	t.Parallel()
+
+	req, err := http.NewRequest(http.MethodGet, "http://localhost:8080/verify", nil)
+	if err != nil {
+		t.Fatalf("http.NewRequest() error = %v", err)
+	}
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatalf("http.DefaultClient.Do() error = %v", err)
+	}
+
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusUnauthorized {
+		t.Fatalf("vRes.StatusCode = %v", res.StatusCode)
 	}
 }
 
